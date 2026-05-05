@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Todo Suspensión - Catálogo de Repuestos</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --red: #D62828;
+    --red-dark: #9B1B1B;
+    --red-light: #FDEAEA;
+    --yellow: #F7B731;
+    --yellow-dark: #D4950A;
+    --gray-100: #F5F5F5;
+    --gray-200: #E8E8E8;
+    --gray-400: #ABABAB;
+    --gray-600: #6B6B6B;
+    --gray-800: #2A2A2A;
+    --white: #FFFFFF;
+    --font-display: 'Barlow Condensed', sans-serif;
+    --font-body: 'Barlow', sans-serif;
+  }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--gray-100);
+    color: var(--gray-800);
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  header {
+    background: var(--gray-800);
+    padding: 0;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  }
+  .header-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .logo-icon {
+    width: 44px;
+    height: 44px;
+    background: var(--red);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 20px;
+    color: white;
+    letter-spacing: -1px;
+  }
+  .logo-text h1 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 22px;
+    color: white;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  .logo-text span {
+    font-size: 11px;
+    color: var(--gray-400);
+    letter-spacing: 2px;
+    text-transform: uppercase;
+  }
+  .cart-btn {
+    background: var(--red);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    letter-spacing: 0.5px;
+    transition: background 0.15s;
+  }
+  .cart-btn:hover { background: var(--red-dark); }
+  .cart-count {
+    background: var(--yellow);
+    color: var(--gray-800);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* HERO */
+  .hero {
+    background: linear-gradient(135deg, var(--gray-800) 0%, #3a3a3a 100%);
+    padding: 40px 24px 36px;
+    text-align: center;
+    border-bottom: 4px solid var(--red);
+  }
+  .hero h2 {
+    font-family: var(--font-display);
+    font-size: 42px;
+    font-weight: 800;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    line-height: 1;
+    margin-bottom: 8px;
+  }
+  .hero h2 span { color: var(--yellow); }
+  .hero p {
+    color: var(--gray-400);
+    font-size: 15px;
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  /* FILTER BAR */
+  .filter-bar {
+    background: white;
+    border-bottom: 1px solid var(--gray-200);
+    padding: 12px 24px;
+  }
+  .filter-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .filter-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-600);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-right: 4px;
+  }
+  .filter-btn {
+    background: var(--gray-100);
+    border: 1px solid var(--gray-200);
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-600);
+    cursor: pointer;
+    transition: all 0.15s;
+    font-family: var(--font-body);
+  }
+  .filter-btn:hover { border-color: var(--red); color: var(--red); }
+  .filter-btn.active { background: var(--red); border-color: var(--red); color: white; }
+
+  /* CATALOG GRID */
+  .catalog-section {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 28px 24px;
+  }
+  .section-title {
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--gray-600);
+    margin-bottom: 16px;
+  }
+  .products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 16px;
+  }
+  .product-card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--gray-200);
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .product-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+  .product-img {
+    width: 100%;
+    height: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 52px;
+    background: var(--gray-100);
+  }
+  .product-body { padding: 14px; }
+  .product-category {
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--red);
+    margin-bottom: 4px;
+  }
+  .product-name {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--gray-800);
+    margin-bottom: 4px;
+    line-height: 1.2;
+  }
+  .product-desc {
+    font-size: 13px;
+    color: var(--gray-600);
+    line-height: 1.4;
+    margin-bottom: 12px;
+  }
+  .price-note {
+    font-size: 11px;
+    color: var(--gray-400);
+    font-style: italic;
+    margin-bottom: 10px;
+  }
+  .qty-controls {
+    display: flex;
+    align-items: center;
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    overflow: hidden;
+    width: fit-content;
+  }
+  .qty-btn {
+    background: var(--gray-100);
+    border: none;
+    width: 32px;
+    height: 32px;
+    font-size: 18px;
+    cursor: pointer;
+    color: var(--gray-800);
+    font-weight: 600;
+    transition: background 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .qty-btn:hover { background: var(--red); color: white; }
+  .qty-display {
+    width: 40px;
+    height: 32px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--gray-800);
+    border-left: 1px solid var(--gray-200);
+    border-right: 1px solid var(--gray-200);
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .add-btn {
+    background: var(--red);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: background 0.15s;
+    width: 100%;
+    margin-top: 10px;
+  }
+  .add-btn:hover { background: var(--red-dark); }
+  .add-btn.added { background: #2A7A4B; }
+  .product-footer {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+
+  /* CART PANEL */
+  .cart-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 200;
+  }
+  .cart-overlay.open { display: block; }
+  .cart-panel {
+    position: fixed;
+    top: 0;
+    right: -480px;
+    width: 440px;
+    max-width: 100vw;
+    height: 100vh;
+    background: white;
+    z-index: 201;
+    display: flex;
+    flex-direction: column;
+    transition: right 0.25s ease;
+    box-shadow: -4px 0 24px rgba(0,0,0,0.2);
+  }
+  .cart-panel.open { right: 0; }
+  .cart-header {
+    background: var(--gray-800);
+    color: white;
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .cart-header h3 {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 24px;
+    cursor: pointer;
+    padding: 4px;
+  }
+  .cart-body { flex: 1; overflow-y: auto; padding: 16px; }
+  .cart-empty {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--gray-400);
+  }
+  .cart-empty-icon { font-size: 48px; margin-bottom: 12px; }
+  .cart-item {
+    background: var(--gray-100);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .cart-item-icon { font-size: 28px; }
+  .cart-item-info { flex: 1; }
+  .cart-item-name { font-weight: 600; font-size: 15px; color: var(--gray-800); }
+  .cart-item-detail { font-size: 13px; color: var(--gray-600); }
+  .cart-item-qty {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .cart-qty-btn {
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 6px;
+    width: 28px;
+    height: 28px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.1s;
+  }
+  .cart-qty-btn:hover { background: var(--red); color: white; border-color: var(--red); }
+  .cart-qty-num { font-weight: 700; font-size: 15px; min-width: 20px; text-align: center; }
+  .cart-footer { padding: 16px; border-top: 1px solid var(--gray-200); }
+
+  /* DELIVERY SECTION */
+  .delivery-section {
+    background: var(--gray-100);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+  .delivery-title {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 10px;
+    color: var(--gray-800);
+  }
+  .delivery-options {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .delivery-opt {
+    flex: 1;
+    border: 2px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 10px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+    background: white;
+  }
+  .delivery-opt:hover { border-color: var(--red); }
+  .delivery-opt.selected { border-color: var(--red); background: var(--red-light); }
+  .delivery-opt-icon { font-size: 22px; margin-bottom: 4px; }
+  .delivery-opt-label { font-size: 13px; font-weight: 600; color: var(--gray-800); }
+  .address-input { display: none; margin-top: 8px; }
+  .address-input.show { display: block; }
+  .address-input input, .address-input textarea {
+    width: 100%;
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: var(--font-body);
+    color: var(--gray-800);
+    background: white;
+    margin-bottom: 8px;
+    resize: none;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .address-input input:focus, .address-input textarea:focus { border-color: var(--red); }
+
+  /* CUSTOMER INFO */
+  .customer-section {
+    background: var(--gray-100);
+    border-radius: 10px;
+    padding: 14px;
+    margin-bottom: 16px;
+  }
+  .customer-section input {
+    width: 100%;
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: var(--font-body);
+    color: var(--gray-800);
+    background: white;
+    margin-bottom: 8px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  .customer-section input:focus { border-color: var(--red); }
+
+  .whatsapp-btn {
+    width: 100%;
+    background: #25D366;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    padding: 14px;
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .whatsapp-btn:hover { background: #1ebe5e; }
+  .whatsapp-btn:active { transform: scale(0.98); }
+
+  .notes-input {
+    width: 100%;
+    border: 1px solid var(--gray-200);
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: var(--font-body);
+    color: var(--gray-800);
+    background: white;
+    margin-bottom: 8px;
+    resize: none;
+    outline: none;
+    transition: border-color 0.15s;
+    display: block;
+  }
+  .notes-input:focus { border-color: var(--red); }
+
+  /* TOAST */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--gray-800);
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    z-index: 300;
+    transition: transform 0.3s;
+    pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 600px) {
+    .hero h2 { font-size: 28px; }
+    .products-grid { grid-template-columns: 1fr 1fr; }
+    .cart-panel { width: 100vw; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">
+      <div class="logo-icon">TS</div>
+      <div class="logo-text">
+        <h1>Todo Suspensión</h1>
+        <span>Repuestos Automotrices</span>
+      </div>
+    </div>
+    <button class="cart-btn" onclick="toggleCart()">
+      🛒 Carrito
+      <span class="cart-count" id="cartCount">0</span>
+    </button>
+  </div>
+</header>
+
+<div class="hero">
+  <h2>Catálogo de <span>Repuestos</span></h2>
+  <p>Selecciona los productos que necesitas y envíanos tu pedido por WhatsApp</p>
+</div>
+
+<div class="filter-bar">
+  <div class="filter-inner">
+    <span class="filter-label">Filtrar:</span>
+    <button class="filter-btn active" onclick="filterProducts('todos', this)">Todos</button>
+    <button class="filter-btn" onclick="filterProducts('amortiguadores', this)">Amortiguadores</button>
+    <button class="filter-btn" onclick="filterProducts('rotulas', this)">Rótulas</button>
+    <button class="filter-btn" onclick="filterProducts('terminales', this)">Terminales</button>
+    <button class="filter-btn" onclick="filterProducts('bujes', this)">Bujes</button>
+    <button class="filter-btn" onclick="filterProducts('axiales', this)">Axiales</button>
+    <button class="filter-btn" onclick="filterProducts('rodamientos', this)">Rodamientos</button>
+  </div>
+</div>
+
+<div class="catalog-section">
+  <p class="section-title" id="sectionTitle">Todos los productos</p>
+  <div class="products-grid" id="productsGrid"></div>
+</div>
+
+<!-- CART PANEL -->
+<div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+<div class="cart-panel" id="cartPanel">
+  <div class="cart-header">
+    <h3>🛒 Tu Pedido</h3>
+    <button class="close-btn" onclick="toggleCart()">✕</button>
+  </div>
+  <div class="cart-body" id="cartBody">
+    <div class="cart-empty" id="cartEmpty">
+      <div class="cart-empty-icon">📦</div>
+      <p>Tu carrito está vacío</p>
+      <p style="font-size:13px;margin-top:6px;">Agrega productos del catálogo</p>
+    </div>
+    <div id="cartItems"></div>
+  </div>
+  <div class="cart-footer" id="cartFooter" style="display:none;">
+    <div class="customer-section">
+      <div class="delivery-title">Tus datos</div>
+      <input type="text" id="customerName" placeholder="Tu nombre *" />
+      <input type="tel" id="customerPhone" placeholder="Tu teléfono *" />
+    </div>
+    <div class="delivery-section">
+      <div class="delivery-title">Tipo de entrega</div>
+      <div class="delivery-options">
+        <div class="delivery-opt selected" id="opt-envio" onclick="selectDelivery('envio')">
+          <div class="delivery-opt-icon">🚚</div>
+          <div class="delivery-opt-label">Envío</div>
+        </div>
+        <div class="delivery-opt" id="opt-recogida" onclick="selectDelivery('recogida')">
+          <div class="delivery-opt-icon">🏪</div>
+          <div class="delivery-opt-label">Recogida en almacén</div>
+        </div>
+      </div>
+      <div class="address-input show" id="addressInput">
+        <input type="text" id="addressCity" placeholder="Ciudad / Municipio *" />
+        <input type="text" id="addressStreet" placeholder="Dirección completa *" />
+        <input type="text" id="addressRef" placeholder="Referencia o indicaciones (opcional)" />
+      </div>
+    </div>
+    <textarea class="notes-input" id="orderNotes" rows="2" placeholder="Notas adicionales (marca, modelo del vehículo, etc.)"></textarea>
+    <button class="whatsapp-btn" onclick="sendWhatsApp()">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/></svg>
+      Enviar pedido
+    </button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const WHATSAPP_NUMBER = '573162112934';
+
+const products = [
+  { id: 1, category: 'amortiguadores', name: 'Amortiguador delantero', desc: 'Compatible con múltiples referencias. Preguntar disponibilidad.', icon: '🔩' },
+  { id: 2, category: 'amortiguadores', name: 'Amortiguador trasero', desc: 'Para vehículos livianos y camperos. Consultar referencia.', icon: '🔩' },
+  { id: 3, category: 'amortiguadores', name: 'Kit amortiguadores', desc: 'Par delantero o trasero. Varias marcas disponibles.', icon: '🛠️' },
+  { id: 4, category: 'rotulas', name: 'Rótula inferior', desc: 'Rótula de dirección inferior. Preguntar por marca del vehículo.', icon: '⚙️' },
+  { id: 5, category: 'rotulas', name: 'Rótula superior', desc: 'Rótula de suspensión superior. Múltiples referencias.', icon: '⚙️' },
+  { id: 6, category: 'rotulas', name: 'Kit de rótulas', desc: 'Kit completo superior e inferior. Consultar disponibilidad.', icon: '🔧' },
+  { id: 7, category: 'terminales', name: 'Terminal de dirección', desc: 'Terminal izquierdo o derecho. Diversas referencias.', icon: '🔗' },
+  { id: 8, category: 'terminales', name: 'Terminal central', desc: 'Para cajas de dirección. Preguntar por su referencia.', icon: '🔗' },
+  { id: 9, category: 'bujes', name: 'Buje de tijera', desc: 'Buje de caucho para brazos de suspensión. Varias medidas.', icon: '🟤' },
+  { id: 10, category: 'bujes', name: 'Kit de bujes', desc: 'Kit completo de bujes para un eje. Consultar modelo.', icon: '🟤' },
+  { id: 11, category: 'bujes', name: 'Buje estabilizadora', desc: 'Bujes para barra estabilizadora delantera o trasera.', icon: '🟤' },
+  { id: 12, category: 'axiales', name: 'Axial de dirección', desc: 'Axial para cremallera o caja de dirección. Varios tipos.', icon: '📌' },
+  { id: 13, category: 'axiales', name: 'Axial externo', desc: 'Axial exterior de barra de dirección. Consultar referencia.', icon: '📌' },
+  { id: 14, category: 'rodamientos', name: 'Rodamiento de rueda', desc: 'Delantero o trasero. Especificar vehículo y posición.', icon: '🔵' },
+  { id: 15, category: 'rodamientos', name: 'Rodamiento de masa', desc: 'Rodamiento completo con masa. Múltiples referencias.', icon: '🔵' },
+  { id: 16, category: 'rodamientos', name: 'Plato de freno', desc: 'Discos y platinas de freno. Consultar disponibilidad.', icon: '🔵' },
+];
+
+let cart = {};
+let deliveryType = 'envio';
+
+function renderProducts(filter) {
+  const grid = document.getElementById('productsGrid');
+  const filtered = (!filter || filter === 'todos') ? products : products.filter(p => p.category === filter);
+  const titles = { todos: 'Todos los productos', amortiguadores: 'Amortiguadores', rotulas: 'Rótulas', terminales: 'Terminales', bujes: 'Bujes de tijera', axiales: 'Axiales', rodamientos: 'Rodamientos' };
+  document.getElementById('sectionTitle').textContent = (titles[filter] || 'Todos los productos') + ' (' + filtered.length + ' productos)';
+
+  grid.innerHTML = filtered.map(function(p) {
+    var qty = cart[p.id] ? cart[p.id].qty : 0;
+    return '<div class="product-card" data-id="' + p.id + '">' +
+      '<div class="product-img">' + p.icon + '</div>' +
+      '<div class="product-body">' +
+        '<div class="product-category">' + p.category + '</div>' +
+        '<div class="product-name">' + p.name + '</div>' +
+        '<div class="product-desc">' + p.desc + '</div>' +
+        '<p class="price-note">💬 Precio a consultar</p>' +
+        '<div class="product-footer">' +
+          '<div class="qty-controls">' +
+            '<button class="qty-btn" onclick="changeQty(' + p.id + ', -1)">−</button>' +
+            '<div class="qty-display" id="qty-' + p.id + '">' + qty + '</div>' +
+            '<button class="qty-btn" onclick="changeQty(' + p.id + ', 1)">+</button>' +
+          '</div>' +
+        '</div>' +
+        '<button class="add-btn ' + (qty > 0 ? 'added' : '') + '" id="btn-' + p.id + '" onclick="addToCart(' + p.id + ')">' +
+          (qty > 0 ? '✓ Agregado' : '+ Agregar') +
+        '</button>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function changeQty(id, delta) {
+  var product = products.find(function(p) { return p.id === id; });
+  if (!cart[id]) cart[id] = Object.assign({}, product, { qty: 0 });
+  cart[id].qty = Math.max(0, cart[id].qty + delta);
+  if (cart[id].qty === 0) delete cart[id];
+  updateQtyDisplay(id);
+  updateCart();
+}
+
+function addToCart(id) {
+  var product = products.find(function(p) { return p.id === id; });
+  if (!cart[id]) { cart[id] = Object.assign({}, product, { qty: 1 }); }
+  else { cart[id].qty += 1; }
+  updateQtyDisplay(id);
+  updateCart();
+  showToast(product.name + ' agregado al carrito');
+}
+
+function updateQtyDisplay(id) {
+  var qtyEl = document.getElementById('qty-' + id);
+  var btnEl = document.getElementById('btn-' + id);
+  if (qtyEl) qtyEl.textContent = cart[id] ? cart[id].qty : 0;
+  if (btnEl) {
+    var qty = cart[id] ? cart[id].qty : 0;
+    btnEl.textContent = qty > 0 ? '✓ Agregado (' + qty + ')' : '+ Agregar';
+    btnEl.className = 'add-btn ' + (qty > 0 ? 'added' : '');
+  }
+}
+
+function updateCart() {
+  var total = Object.values(cart).reduce(function(s, i) { return s + i.qty; }, 0);
+  document.getElementById('cartCount').textContent = total;
+
+  var items = Object.values(cart);
+  var cartItemsEl = document.getElementById('cartItems');
+  var cartEmptyEl = document.getElementById('cartEmpty');
+  var cartFooterEl = document.getElementById('cartFooter');
+
+  if (items.length === 0) {
+    cartEmptyEl.style.display = 'block';
+    cartItemsEl.innerHTML = '';
+    cartFooterEl.style.display = 'none';
+  } else {
+    cartEmptyEl.style.display = 'none';
+    cartFooterEl.style.display = 'block';
+    cartItemsEl.innerHTML = items.map(function(item) {
+      return '<div class="cart-item">' +
+        '<div class="cart-item-icon">' + item.icon + '</div>' +
+        '<div class="cart-item-info">' +
+          '<div class="cart-item-name">' + item.name + '</div>' +
+          '<div class="cart-item-detail">' + item.category + ' · Precio a consultar</div>' +
+        '</div>' +
+        '<div class="cart-item-qty">' +
+          '<button class="cart-qty-btn" onclick="changeQty(' + item.id + ', -1)">−</button>' +
+          '<span class="cart-qty-num">' + item.qty + '</span>' +
+          '<button class="cart-qty-btn" onclick="changeQty(' + item.id + ', 1)">+</button>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+}
+
+function selectDelivery(type) {
+  deliveryType = type;
+  document.getElementById('opt-envio').className = 'delivery-opt' + (type === 'envio' ? ' selected' : '');
+  document.getElementById('opt-recogida').className = 'delivery-opt' + (type === 'recogida' ? ' selected' : '');
+  document.getElementById('addressInput').className = 'address-input' + (type === 'envio' ? ' show' : '');
+}
+
+function filterProducts(cat, btn) {
+  document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+  btn.classList.add('active');
+  renderProducts(cat);
+}
+
+function toggleCart() {
+  var panel = document.getElementById('cartPanel');
+  var overlay = document.getElementById('cartOverlay');
+  var isOpen = panel.classList.contains('open');
+  panel.classList.toggle('open', !isOpen);
+  overlay.classList.toggle('open', !isOpen);
+}
+
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(function() { t.classList.remove('show'); }, 2200);
+}
+
+function sendWhatsApp() {
+  var name = document.getElementById('customerName').value.trim();
+  var phone = document.getElementById('customerPhone').value.trim();
+  var notes = document.getElementById('orderNotes').value.trim();
+  var items = Object.values(cart);
+
+  if (!name) { showToast('Por favor escribe tu nombre'); return; }
+  if (!phone) { showToast('Por favor escribe tu teléfono'); return; }
+  if (items.length === 0) { showToast('El carrito está vacío'); return; }
+
+  var deliveryInfo = '';
+  if (deliveryType === 'envio') {
+    var city = document.getElementById('addressCity').value.trim();
+    var street = document.getElementById('addressStreet').value.trim();
+    var ref = document.getElementById('addressRef').value.trim();
+    if (!city || !street) { showToast('Por favor completa la dirección de envío'); return; }
+    deliveryInfo = '📦 *Tipo de entrega:* Envío a domicilio\n🏙️ *Ciudad:* ' + city + '\n📍 *Dirección:* ' + street + (ref ? '\n📝 *Referencia:* ' + ref : '');
+  } else {
+    deliveryInfo = '🏪 *Tipo de entrega:* Recogida en almacén';
+  }
+
+  var productList = items.map(function(i) { return '   • ' + i.name + ' x' + i.qty; }).join('\n');
+
+  var message = '🔧 *PEDIDO - TODO SUSPENSIÓN* 🔧\n\n👤 *Cliente:* ' + name + '\n📱 *Teléfono:* ' + phone + '\n\n🛒 *Productos solicitados:*\n' + productList + '\n\n' + deliveryInfo + (notes ? '\n\n💬 *Notas:* ' + notes : '') + '\n\n_Pedido enviado desde el catálogo web_';
+
+  var url = 'https://wa.me/' + WHATSAPP_NUMBER + '?text=' + encodeURIComponent(message);
+  window.open(url, '_blank');
+}
+
+renderProducts('todos');
+</script>
+</body>
+</html>
